@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
+import 'package:gansabogo/model/provider_model.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 
@@ -25,9 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(
-            create: (BuildContext context) {},
-          ),
+          ChangeNotifierProvider(create: (_) => CurrentUserModel()),
         ],
         child: MaterialApp(
           theme: ThemeData(

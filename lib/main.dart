@@ -5,6 +5,8 @@ import 'package:gansabogo/model/provider_model.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 
+import 'package:gansabogo/pages/auth_pages.dart';
+
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -117,7 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 : MediaQuery.of(context)
                                                         .size
                                                         .height *
-                                                    0.05,
+                                                    0.04,
                                             color: Colors.white),
                                       ),
                                       Row(
@@ -228,7 +230,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           : MediaQuery.of(context).size.height * 0.15,
                       child:
                           Image.asset('asset/images/buttons/login_button.png')),
-                  onTap: () {})),
+                  onTap: () {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LogInPage()),
+                        (route) => false);
+                  })),
           Flexible(
               fit: FlexFit.loose,
               child: InkWell(
@@ -238,7 +246,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           : MediaQuery.of(context).size.height * 0.15,
                       child: Image.asset(
                           'asset/images/buttons/signup_button.png')),
-                  onTap: () {})),
+                  onTap: () {
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpPage()),
+                        (route) => false);
+                  })),
         ]);
   }
 

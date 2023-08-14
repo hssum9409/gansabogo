@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "489294807419",
+    "project_id": "gansabogo",
+    "storage_bucket": "gansabogo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:489294807419:android:779c67a00577aad21f7dde",
+        "android_client_info": {
+          "package_name": "com.example.gansabogo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "489294807419-dl422v7qctoqgh264roma8rk2q6a9n09.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYBKzE9QyMeomw5N5Owya_3itlMlLGBkA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "489294807419-dl422v7qctoqgh264roma8rk2q6a9n09.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

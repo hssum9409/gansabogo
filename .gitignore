@@ -50,3 +50,6 @@ storage.rules
 
 # sensitive infos
 /lib/config_private/
+
+# generated files
+**/[fF]lutter/[gG]enerated*.*

@@ -941,7 +941,7 @@ class _LogInPageState extends State<LogInPage> {
 
                                                                               _email = '$_email@gansa.com';
                                                                               await FirebaseAuth.instance.signInWithEmailAndPassword(email: _email!, password: _password!).then((value) async {
-                                                                                Provider.of<CurrentUserModel>(context, listen: false).setUser(value.user);
+                                                                                await Provider.of<CurrentUserModel>(context, listen: false).setUser(value.user);
 
                                                                                 await _saveLoginInfo().then((_) {
                                                                                   showDialog(

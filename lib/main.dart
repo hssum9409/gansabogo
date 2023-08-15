@@ -50,6 +50,26 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   User? user = FirebaseAuth.instance.currentUser;
+  String? userName;
+  String? userPosition;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (user != null) {
+      if (Provider.of<CurrentUserModel>(context, listen: false).user == null) {
+        Future.delayed(Duration.zero, () async {
+          await Provider.of<CurrentUserModel>(context, listen: false)
+              .setUser(user);
+        });
+      }
+
+      userName = Provider.of<CurrentUserModel>(context, listen: false).userName;
+      userPosition =
+          Provider.of<CurrentUserModel>(context, listen: false).userPosition;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        '김이박내내 님 안녕하세요!',
+                                        '$userName님 안녕하세요!',
                                         style: GoogleFonts.eastSeaDokdo(
                                             height: 0.8,
                                             fontSize: MediaQuery.of(context)
@@ -128,8 +148,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                           children: [
                                             TextButton(
                                                 style: TextButton.styleFrom(
-                                                    padding: EdgeInsets.only(
-                                                        right: 8, left: 8)),
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            right: 8, left: 8)),
                                                 onPressed: () {},
                                                 child: Text(
                                                   '회원정보',
@@ -150,7 +171,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                                       color: Colors.blue[700]),
                                                 )),
                                             TextButton(
-                                                onPressed: () {},
+                                                onPressed: () {
+                                                  FirebaseAuth.instance
+                                                      .signOut();
+                                                  setState(() {
+                                                    user = null;
+                                                    Provider.of<CurrentUserModel>(
+                                                            context,
+                                                            listen: false)
+                                                        .setUser(null);
+                                                  });
+                                                },
                                                 child: Text(
                                                   '로그아웃',
                                                   style: GoogleFonts.eastSeaDokdo(

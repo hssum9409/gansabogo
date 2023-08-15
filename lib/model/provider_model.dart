@@ -13,6 +13,8 @@ class CurrentUserModel with ChangeNotifier {
   Future<void> setUser(User? user) async {
     _user = user;
 
+    print('setUser: ${_user?.uid}');
+
     if (user != null) {
       await FirebaseFirestore.instance
           .collection('user')
@@ -35,6 +37,7 @@ class CurrentUserModel with ChangeNotifier {
 
   User? get user => _user;
   String? get userName => _userName;
+  String? get displayName => _userName != null ? '$_userName님 ' : '';
   String? get userPosition => _userPosition;
   Map<String, dynamic>? get userData => _userData;
 }

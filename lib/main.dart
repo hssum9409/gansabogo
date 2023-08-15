@@ -6,7 +6,6 @@ import 'package:gansabogo/model/provider_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:gansabogo/pages/auth_pages.dart';
-import 'package:gansabogo/pages/camp_generate_page.dart';
 
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -59,6 +58,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
+    // TODO: 페이지 초기 로드속도 개선 필요, fetchData 방식으로 해결 시도해볼 것
+
     if (user != null) {
       if (Provider.of<CurrentUserModel>(context, listen: false).user == null) {
         Future.delayed(Duration.zero, () async {
@@ -66,10 +67,6 @@ class _MyHomePageState extends State<MyHomePage> {
               .setUser(user);
         });
       }
-
-      userName = Provider.of<CurrentUserModel>(context, listen: false).userName;
-      userPosition =
-          Provider.of<CurrentUserModel>(context, listen: false).userPosition;
     }
   }
 
@@ -130,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         CrossAxisAlignment.center,
                                     children: [
                                       Text(
-                                        '$userName님 안녕하세요!',
+                                        '${Provider.of<CurrentUserModel>(context).displayName}안녕하세요!',
                                         style: GoogleFonts.eastSeaDokdo(
                                             height: 0.8,
                                             fontSize: MediaQuery.of(context)
@@ -179,7 +176,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         Expanded(
                             child: user == null
                                 ? unloginedUserMenu()
-                                : userPosition == 'gansa'
+                                : Provider.of<CurrentUserModel>(context)
+                                            .userPosition ==
+                                        'gansa'
                                     ? loginedGansaMenu()
                                     : loginedPasterMenu()),
                         Column(

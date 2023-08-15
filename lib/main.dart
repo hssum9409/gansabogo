@@ -6,6 +6,7 @@ import 'package:gansabogo/model/provider_model.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'package:gansabogo/pages/auth_pages.dart';
+import 'package:gansabogo/pages/camp_generate_page.dart';
 
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -364,7 +365,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         : MediaQuery.of(context).size.height * 0.15,
                     child: Image.asset(
                         'asset/images/buttons/camp_management_button.png')),
-                onTap: () {})),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CampGeneratePage()));
+                })),
       ],
     );
   }

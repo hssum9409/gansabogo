@@ -333,6 +333,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                                                     TextButton(
                                                                         onPressed:
                                                                             () async {
+                                                                          // TODO: 대기 상태를 표시하는 로딩 화면 표시
                                                                           if (formKey
                                                                               .currentState!
                                                                               .validate()) {
@@ -351,6 +352,22 @@ class _SignUpPageState extends State<SignUpPage> {
                                                                                   }
                                                                                 });
                                                                               }).then((_) {
+                                                                                showDialog(
+                                                                                    context: context,
+                                                                                    builder: (context) {
+                                                                                      return AlertDialog(
+                                                                                        title: const Text('회원가입 완료!'),
+                                                                                        content: const Text('회원가입에 성공했습니다!'),
+                                                                                        actions: [
+                                                                                          TextButton(
+                                                                                              onPressed: () {
+                                                                                                Navigator.pop(context);
+                                                                                              },
+                                                                                              child: const Text('확인'))
+                                                                                        ],
+                                                                                      );
+                                                                                    });
+
                                                                                 Provider.of<CurrentUserModel>(context, listen: false).setUser(userCredential.user);
                                                                                 Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const MyHomePage()), (route) => false);
                                                                               });
@@ -737,6 +754,7 @@ class _LogInPageState extends State<LogInPage> {
                                                                       TextButton(
                                                                           onPressed:
                                                                               () async {
+                                                                            // TODO: 대기 상태를 표시하는 로딩 화면 표시
                                                                             if (formKey.currentState!.validate()) {
                                                                               formKey.currentState!.save();
 
@@ -763,6 +781,7 @@ class _LogInPageState extends State<LogInPage> {
 
                                                                                   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const MyHomePage()), (route) => false);
                                                                                 });
+                                                                                // TODO: 로그인 실패시 실패 사유 표시하는 dialog 표시
                                                                               });
                                                                             }
                                                                           },

@@ -21,6 +21,7 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
+  //TODO : TextFormField 위젯 분리 (inputForm)
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   String? _email;

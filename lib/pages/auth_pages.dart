@@ -21,7 +21,6 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  //TODO : TextFormField 위젯 분리 (inputForm)
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   String? _email;
@@ -123,351 +122,75 @@ class _SignUpPageState extends State<SignUpPage> {
                                                   CrossAxisAlignment.start,
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 8.0),
-                                                  child: Row(children: [
-                                                    Expanded(
-                                                        flex: 4,
-                                                        child: Center(
-                                                            child: Text(
-                                                          '아이디',
-                                                          style: GoogleFonts.eastSeaDokdo(
-                                                              height: 0.8,
-                                                              fontSize: MediaQuery.of(context)
-                                                                              .size
-                                                                              .height *
-                                                                          0.1 >
-                                                                      32
-                                                                  ? 32
-                                                                  : MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .height *
-                                                                      0.1,
-                                                              color:
-                                                                  Colors.white),
-                                                        ))),
-                                                    const Expanded(
-                                                        flex: 1,
-                                                        child:
-                                                            SizedBox.shrink()),
-                                                    Expanded(
-                                                        flex: 5,
-                                                        child: TextFormField(
-                                                          keyboardType:
-                                                              TextInputType
-                                                                  .text,
-                                                          style: GoogleFonts.eastSeaDokdo(
-                                                              height: 0.8,
-                                                              fontSize: MediaQuery.of(context)
-                                                                              .size
-                                                                              .height *
-                                                                          0.1 >
-                                                                      32
-                                                                  ? 32
-                                                                  : MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .height *
-                                                                      0.1,
-                                                              color:
-                                                                  Colors.white),
-                                                          decoration:
-                                                              InputDecoration(
-                                                                  hintText:
-                                                                      '아이디를 입력해주세요',
-                                                                  hintStyle:
-                                                                      GoogleFonts
-                                                                          .eastSeaDokdo(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    height: 0.8,
-                                                                    fontSize: MediaQuery.of(context).size.height *
-                                                                                0.05 >
-                                                                            16
-                                                                        ? 16
-                                                                        : MediaQuery.of(context).size.height *
-                                                                            0.05,
-                                                                  ),
-                                                                  enabledBorder:
-                                                                      const UnderlineInputBorder(
-                                                                          borderSide:
-                                                                              BorderSide(color: Colors.white))),
-                                                          onSaved: (value) {
-                                                            _email = value;
-                                                          },
-                                                          validator: (value) {
-                                                            if (value == null ||
-                                                                value.isEmpty) {
-                                                              return '아이디를 입력해주세요';
-                                                            }
-                                                            return null;
-                                                          },
-                                                        ))
-                                                  ]),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 8.0),
-                                                  child: Row(children: [
-                                                    Expanded(
-                                                        flex: 4,
-                                                        child: Center(
-                                                            child: Text(
-                                                          '비밀번호',
-                                                          style: GoogleFonts.eastSeaDokdo(
-                                                              height: 0.8,
-                                                              fontSize: MediaQuery.of(context)
-                                                                              .size
-                                                                              .height *
-                                                                          0.1 >
-                                                                      32
-                                                                  ? 32
-                                                                  : MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .height *
-                                                                      0.1,
-                                                              color:
-                                                                  Colors.white),
-                                                        ))),
-                                                    const Expanded(
-                                                        flex: 1,
-                                                        child:
-                                                            SizedBox.shrink()),
-                                                    Expanded(
-                                                        flex: 5,
-                                                        child: TextFormField(
-                                                          keyboardType:
-                                                              TextInputType
-                                                                  .text,
-                                                          obscureText: true,
-                                                          style: GoogleFonts.eastSeaDokdo(
-                                                              height: 0.8,
-                                                              fontSize: MediaQuery.of(context)
-                                                                              .size
-                                                                              .height *
-                                                                          0.1 >
-                                                                      32
-                                                                  ? 32
-                                                                  : MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .height *
-                                                                      0.1,
-                                                              color:
-                                                                  Colors.white),
-                                                          decoration:
-                                                              InputDecoration(
-                                                                  hintText:
-                                                                      '비밀번호를 입력해주세요',
-                                                                  hintStyle:
-                                                                      GoogleFonts
-                                                                          .eastSeaDokdo(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    height: 0.8,
-                                                                    fontSize: MediaQuery.of(context).size.height *
-                                                                                0.05 >
-                                                                            16
-                                                                        ? 16
-                                                                        : MediaQuery.of(context).size.height *
-                                                                            0.05,
-                                                                  ),
-                                                                  enabledBorder:
-                                                                      const UnderlineInputBorder(
-                                                                          borderSide:
-                                                                              BorderSide(color: Colors.white))),
-                                                          onChanged: (value) {
-                                                            _password = value;
-                                                          },
-                                                          validator: (value) {
-                                                            if (value == null ||
-                                                                value.isEmpty) {
-                                                              return '비밀번호를 입력해주세요';
-                                                            }
-                                                            return null;
-                                                          },
-                                                        ))
-                                                  ]),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 8.0),
-                                                  child: Row(children: [
-                                                    Expanded(
-                                                        flex: 4,
-                                                        child: Center(
-                                                            child: Text(
-                                                          '비밀번호 확인',
-                                                          style: GoogleFonts.eastSeaDokdo(
-                                                              height: 0.8,
-                                                              fontSize: MediaQuery.of(context)
-                                                                              .size
-                                                                              .height *
-                                                                          0.1 >
-                                                                      32
-                                                                  ? 32
-                                                                  : MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .height *
-                                                                      0.1,
-                                                              color:
-                                                                  Colors.white),
-                                                        ))),
-                                                    const Expanded(
-                                                        flex: 1,
-                                                        child:
-                                                            SizedBox.shrink()),
-                                                    Expanded(
-                                                        flex: 5,
-                                                        child: TextFormField(
-                                                          keyboardType:
-                                                              TextInputType
-                                                                  .number,
-                                                          obscureText: true,
-                                                          style: GoogleFonts.eastSeaDokdo(
-                                                              height: 0.8,
-                                                              fontSize: MediaQuery.of(context)
-                                                                              .size
-                                                                              .height *
-                                                                          0.1 >
-                                                                      32
-                                                                  ? 32
-                                                                  : MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .height *
-                                                                      0.1,
-                                                              color:
-                                                                  Colors.white),
-                                                          decoration:
-                                                              InputDecoration(
-                                                                  hintText:
-                                                                      '동일한 비밀번호를 입력해주세요',
-                                                                  hintStyle:
-                                                                      GoogleFonts
-                                                                          .eastSeaDokdo(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    height: 0.8,
-                                                                    fontSize: MediaQuery.of(context).size.height *
-                                                                                0.05 >
-                                                                            16
-                                                                        ? 16
-                                                                        : MediaQuery.of(context).size.height *
-                                                                            0.05,
-                                                                  ),
-                                                                  enabledBorder:
-                                                                      const UnderlineInputBorder(
-                                                                          borderSide:
-                                                                              BorderSide(color: Colors.white))),
-                                                          onSaved: (value) {
-                                                            _password = value;
-                                                          },
-                                                          validator: (value) {
-                                                            if (value == null ||
-                                                                value.isEmpty) {
-                                                              return '비밀번호를 입력해주세요';
-                                                            }
-                                                            if (value !=
-                                                                _password) {
-                                                              return '비밀번호가 일치하지 않습니다';
-                                                            }
-                                                            return null;
-                                                          },
-                                                        ))
-                                                  ]),
-                                                ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 8.0),
-                                                  child: Row(children: [
-                                                    Expanded(
-                                                        flex: 4,
-                                                        child: Center(
-                                                            child: Text(
-                                                          '이름',
-                                                          style: GoogleFonts.eastSeaDokdo(
-                                                              height: 0.8,
-                                                              fontSize: MediaQuery.of(context)
-                                                                              .size
-                                                                              .height *
-                                                                          0.1 >
-                                                                      32
-                                                                  ? 32
-                                                                  : MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .height *
-                                                                      0.1,
-                                                              color:
-                                                                  Colors.white),
-                                                        ))),
-                                                    const Expanded(
-                                                        flex: 1,
-                                                        child:
-                                                            SizedBox.shrink()),
-                                                    Expanded(
-                                                        flex: 5,
-                                                        child: TextFormField(
-                                                          keyboardType:
-                                                              TextInputType
-                                                                  .text,
-                                                          style: GoogleFonts.eastSeaDokdo(
-                                                              height: 0.8,
-                                                              fontSize: MediaQuery.of(context)
-                                                                              .size
-                                                                              .height *
-                                                                          0.1 >
-                                                                      32
-                                                                  ? 32
-                                                                  : MediaQuery.of(
-                                                                              context)
-                                                                          .size
-                                                                          .height *
-                                                                      0.1,
-                                                              color:
-                                                                  Colors.white),
-                                                          decoration:
-                                                              InputDecoration(
-                                                                  hintText:
-                                                                      '이름을 입력해주세요',
-                                                                  hintStyle:
-                                                                      GoogleFonts
-                                                                          .eastSeaDokdo(
-                                                                    color: Colors
-                                                                        .white,
-                                                                    height: 0.8,
-                                                                    fontSize: MediaQuery.of(context).size.height *
-                                                                                0.05 >
-                                                                            16
-                                                                        ? 16
-                                                                        : MediaQuery.of(context).size.height *
-                                                                            0.05,
-                                                                  ),
-                                                                  enabledBorder:
-                                                                      const UnderlineInputBorder(
-                                                                          borderSide:
-                                                                              BorderSide(color: Colors.white))),
-                                                          onSaved: (value) {
-                                                            _name = value;
-                                                          },
-                                                          validator: (value) {
-                                                            if (value == null ||
-                                                                value.isEmpty) {
-                                                              return '이름을 입력해주세요';
-                                                            }
-                                                            return null;
-                                                          },
-                                                        ))
-                                                  ]),
+                                                inputForm(
+                                                    context: context,
+                                                    label: '아이디',
+                                                    hint: '아이디를 입력해주세요',
+                                                    validator: (value) {
+                                                      if (value == null ||
+                                                          value.isEmpty) {
+                                                        return '아이디를 입력해주세요';
+                                                      }
+                                                      return null;
+                                                    },
+                                                    onSaved: (value) {
+                                                      _email = value;
+                                                    },
+                                                    keyboardType:
+                                                        TextInputType.text),
+                                                inputForm(
+                                                    context: context,
+                                                    label: '비밀번호',
+                                                    hint: '비밀번호를 입력해주세요',
+                                                    validator: (value) {
+                                                      if (value == null ||
+                                                          value.isEmpty) {
+                                                        return '비밀번호를 입력해주세요';
+                                                      }
+                                                      return null;
+                                                    },
+                                                    onChanged: (value) {
+                                                      _password = value;
+                                                    },
+                                                    keyboardType:
+                                                        TextInputType.text,
+                                                    obscureText: true),
+                                                inputForm(
+                                                    context: context,
+                                                    label: '비밀번호 확인',
+                                                    hint: '동일한 비밀번호를 입력해주세요',
+                                                    validator: (value) {
+                                                      if (value == null ||
+                                                          value.isEmpty) {
+                                                        return '비밀번호를 입력해주세요';
+                                                      }
+                                                      if (value != _password) {
+                                                        return '비밀번호가 일치하지 않습니다';
+                                                      }
+                                                      return null;
+                                                    },
+                                                    onSaved: (value) {
+                                                      _password = value;
+                                                    },
+                                                    keyboardType:
+                                                        TextInputType.text,
+                                                    obscureText: true),
+                                                inputForm(
+                                                  context: context,
+                                                  label: '이름',
+                                                  hint: '이름을 입력해주세요',
+                                                  validator: (value) {
+                                                    if (value == null ||
+                                                        value.isEmpty) {
+                                                      return '이름을 입력해주세요';
+                                                    }
+                                                    return null;
+                                                  },
+                                                  onSaved: (value) {
+                                                    _name = value;
+                                                  },
+                                                  keyboardType:
+                                                      TextInputType.text,
                                                 ),
                                                 Padding(
                                                   padding:
@@ -680,6 +403,64 @@ class _SignUpPageState extends State<SignUpPage> {
                                             ))))),
                           ],
                         ))))));
+  }
+
+  Widget inputForm({
+    required BuildContext context,
+    required String label,
+    required String hint,
+    required String? Function(String?)? validator,
+    void Function(String?)? onSaved,
+    void Function(String?)? onChanged,
+    TextInputType? keyboardType,
+    bool obscureText = false,
+    TextEditingController? controller,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(children: [
+        Expanded(
+            flex: 4,
+            child: Center(
+                child: Text(
+              label,
+              style: GoogleFonts.eastSeaDokdo(
+                  height: 0.8,
+                  fontSize: MediaQuery.of(context).size.height * 0.1 > 32
+                      ? 32
+                      : MediaQuery.of(context).size.height * 0.1,
+                  color: Colors.white),
+            ))),
+        const Expanded(flex: 1, child: SizedBox.shrink()),
+        Expanded(
+            flex: 5,
+            child: TextFormField(
+              keyboardType: keyboardType,
+              obscureText: obscureText,
+              controller: controller,
+              style: GoogleFonts.eastSeaDokdo(
+                  height: 0.8,
+                  fontSize: MediaQuery.of(context).size.height * 0.1 > 32
+                      ? 32
+                      : MediaQuery.of(context).size.height * 0.1,
+                  color: Colors.white),
+              decoration: InputDecoration(
+                  hintText: hint,
+                  hintStyle: GoogleFonts.eastSeaDokdo(
+                    color: Colors.white,
+                    height: 0.8,
+                    fontSize: MediaQuery.of(context).size.height * 0.05 > 16
+                        ? 16
+                        : MediaQuery.of(context).size.height * 0.05,
+                  ),
+                  enabledBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.white))),
+              onSaved: onSaved,
+              onChanged: onChanged,
+              validator: validator,
+            ))
+      ]),
+    );
   }
 }
 

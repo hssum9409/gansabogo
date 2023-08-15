@@ -727,7 +727,7 @@ class _LogInPageState extends State<LogInPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setBool('rememberMe', _rememberMe);
     if (_rememberMe) {
-      await prefs.setString('email', _email!);
+      await prefs.setString('email', _email!.split('@').first);
     } else {
       await prefs.remove('email');
     }

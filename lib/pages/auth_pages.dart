@@ -243,7 +243,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                                         child: TextFormField(
                                                           keyboardType:
                                                               TextInputType
-                                                                  .number,
+                                                                  .text,
                                                           obscureText: true,
                                                           style: GoogleFonts.eastSeaDokdo(
                                                               height: 0.8,
@@ -870,8 +870,7 @@ class _LogInPageState extends State<LogInPage> {
                                                           _password = value;
                                                         },
                                                         keyboardType:
-                                                            TextInputType
-                                                                .number,
+                                                            TextInputType.text,
                                                         obscureText: true),
                                                     Row(
                                                         mainAxisAlignment:

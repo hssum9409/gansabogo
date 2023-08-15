@@ -124,7 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                           ? 33.2
                                           : MediaQuery.of(context).size.height *
                                               0.04),
-                                  child: Column(
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
@@ -144,65 +145,33 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     0.04,
                                             color: Colors.white),
                                       ),
-                                      Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            TextButton(
-                                                style: TextButton.styleFrom(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            right: 8, left: 8)),
-                                                onPressed: () {},
-                                                child: Text(
-                                                  '회원정보',
-                                                  style: GoogleFonts.eastSeaDokdo(
-                                                      height: 0.8,
-                                                      fontSize: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .height *
-                                                                  0.03 >
-                                                              24
-                                                          ? 24
-                                                          : MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .height *
-                                                              0.04,
-                                                      color: Colors.blue[700]),
-                                                )),
-                                            TextButton(
-                                                onPressed: () {
-                                                  FirebaseAuth.instance
-                                                      .signOut();
-                                                  setState(() {
-                                                    user = null;
-                                                    Provider.of<CurrentUserModel>(
-                                                            context,
-                                                            listen: false)
-                                                        .setUser(null);
-                                                  });
-                                                },
-                                                child: Text(
-                                                  '로그아웃',
-                                                  style: GoogleFonts.eastSeaDokdo(
-                                                      height: 0.8,
-                                                      fontSize: MediaQuery.of(
-                                                                          context)
-                                                                      .size
-                                                                      .height *
-                                                                  0.03 >
-                                                              24
-                                                          ? 24
-                                                          : MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .height *
-                                                              0.04,
-                                                      color: Colors.red[400]),
-                                                )),
-                                          ]),
+                                      TextButton(
+                                          onPressed: () {
+                                            FirebaseAuth.instance.signOut();
+                                            setState(() {
+                                              user = null;
+                                              Provider.of<CurrentUserModel>(
+                                                      context,
+                                                      listen: false)
+                                                  .setUser(null);
+                                            });
+                                          },
+                                          child: Text(
+                                            '로그아웃',
+                                            style: GoogleFonts.eastSeaDokdo(
+                                                height: 0.8,
+                                                fontSize: MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.03 >
+                                                        24
+                                                    ? 24
+                                                    : MediaQuery.of(context)
+                                                            .size
+                                                            .height *
+                                                        0.04,
+                                                color: Colors.red[400]),
+                                          )),
                                     ],
                                   )),
                           ],
@@ -357,21 +326,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Image.asset(
                         'asset/images/buttons/camp_member_management_button.png')),
                 onTap: () {})),
-        Flexible(
-            fit: FlexFit.loose,
-            child: InkWell(
-                child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.15 > 120
-                        ? 120
-                        : MediaQuery.of(context).size.height * 0.15,
-                    child: Image.asset(
-                        'asset/images/buttons/camp_management_button.png')),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CampGeneratePage()));
-                })),
       ],
     );
   }

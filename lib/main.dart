@@ -208,7 +208,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         Expanded(
                             child: user == null
                                 ? unloginedUserMenu()
-                                : loginedGansaMenu()),
+                                : userPosition == 'gansa'
+                                    ? loginedGansaMenu()
+                                    : loginedPasterMenu()),
                         Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -322,6 +324,46 @@ class _MyHomePageState extends State<MyHomePage> {
                         : MediaQuery.of(context).size.height * 0.15,
                     child: Image.asset(
                         'asset/images/buttons/team_member_management_button.png')),
+                onTap: () {})),
+      ],
+    );
+  }
+
+  Widget loginedPasterMenu() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Flexible(
+            fit: FlexFit.loose,
+            child: InkWell(
+                child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.15 > 120
+                        ? 120
+                        : MediaQuery.of(context).size.height * 0.15,
+                    child: Image.asset(
+                        'asset/images/buttons/read_report_button.png')),
+                onTap: () {})),
+        Flexible(
+            fit: FlexFit.loose,
+            child: InkWell(
+                child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.15 > 120
+                        ? 120
+                        : MediaQuery.of(context).size.height * 0.15,
+                    child: Image.asset(
+                        'asset/images/buttons/camp_member_management_button.png')),
+                onTap: () {})),
+        Flexible(
+            fit: FlexFit.loose,
+            child: InkWell(
+                child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.15 > 120
+                        ? 120
+                        : MediaQuery.of(context).size.height * 0.15,
+                    child: Image.asset(
+                        'asset/images/buttons/camp_management_button.png')),
                 onTap: () {})),
       ],
     );

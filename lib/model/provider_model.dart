@@ -38,3 +38,23 @@ class CurrentUserModel with ChangeNotifier {
   String? get userPosition => _userPosition;
   Map<String, dynamic>? get userData => _userData;
 }
+
+class CampGenerateModel with ChangeNotifier {
+  String? _campType;
+  bool _campEtcTypeFormFolded = true;
+
+  void setCampType(String campType) {
+    _campType = campType;
+
+    if (campType == '기타') {
+      _campEtcTypeFormFolded = false;
+    } else {
+      _campEtcTypeFormFolded = true;
+    }
+    notifyListeners();
+  }
+
+  String? get campType => _campType;
+
+  bool get campEtcTypeFormFolded => _campEtcTypeFormFolded;
+}

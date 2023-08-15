@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => CurrentUserModel()),
+          ChangeNotifierProvider(create: (_) => CampGenerateModel()),
         ],
         child: MaterialApp(
           theme: ThemeData(

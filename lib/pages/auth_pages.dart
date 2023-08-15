@@ -340,19 +340,39 @@ class _SignUpPageState extends State<SignUpPage> {
 
                                                                             _email =
                                                                                 '${_email!}@gansa.com';
-                                                                            await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email!, password: _password!).then((value) async {
-                                                                              //TODO : 트랜잭션으로 구현
-                                                                              await FirebaseFirestore.instance.collection('user').doc(value.user!.uid).set({
-                                                                                'info': {
-                                                                                  'name': _name,
-                                                                                  'position': _position == Position.paster ? 'paster' : 'gansa',
-                                                                                  'email': _email,
-                                                                                },
+                                                                            try {
+                                                                              final userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email!, password: _password!);
+
+                                                                              await FirebaseFirestore.instance.runTransaction((transaction) async {
+                                                                                transaction.set(FirebaseFirestore.instance.collection('user').doc(userCredential.user!.uid), {
+                                                                                  'info': {
+                                                                                    'name': _name,
+                                                                                    'position': _position == Position.paster ? 'paster' : 'gansa',
+                                                                                  }
+                                                                                });
                                                                               }).then((_) {
-                                                                                Provider.of<CurrentUserModel>(context, listen: false).setUser(value.user);
+                                                                                Provider.of<CurrentUserModel>(context, listen: false).setUser(userCredential.user);
                                                                                 Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const MyHomePage()), (route) => false);
                                                                               });
-                                                                            });
+                                                                            } catch (e) {
+                                                                              showDialog(
+                                                                                  context: context,
+                                                                                  builder: (context) {
+                                                                                    return AlertDialog(
+                                                                                      title: const Text('회원가입 실패!'),
+                                                                                      content: const Text('회원가입에 실패했습니다!'),
+                                                                                      actions: [
+                                                                                        TextButton(
+                                                                                            onPressed: () {
+                                                                                              Navigator.pop(context);
+                                                                                            },
+                                                                                            child: const Text('확인'))
+                                                                                      ],
+                                                                                    );
+                                                                                  });
+
+                                                                              await FirebaseAuth.instance.currentUser!.delete();
+                                                                            }
                                                                           }
                                                                         },
                                                                         child:

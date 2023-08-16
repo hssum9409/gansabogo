@@ -1,4 +1,3 @@
-//마테리얼 import
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
@@ -10,6 +9,8 @@ import 'package:uuid/uuid.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class CampGeneratePage extends StatefulWidget {
+  const CampGeneratePage({super.key});
+
   @override
   _CampGeneratePageState createState() => _CampGeneratePageState();
 }
@@ -29,8 +30,6 @@ class _CampGeneratePageState extends State<CampGeneratePage> {
     String? campType;
     String? campEtcType;
     String? campProfileMessage;
-
-    bool isEtcFormFolded = true;
 
     return Scaffold(
         body: Container(

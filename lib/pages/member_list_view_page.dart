@@ -89,8 +89,7 @@ class _MemeberListViewPageState extends State<MemeberListViewPage> {
   @override
   Widget build(BuildContext context) {
     // TODO: 레이아웃 정리 필요
-    // TODO: 검색 기능 구현
-    // TODO: 필터 선택 기능 구현
+    // TODO: 검색 기능 및 필터 선택 기능 구현
     return Scaffold(
         body: Container(
             color: const Color(0xFFCEA176),

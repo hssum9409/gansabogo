@@ -289,7 +289,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => MemeberListViewPage()));
+                          builder: (context) => const MemeberListViewPage()));
                 })),
       ],
     );
@@ -324,7 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => MemeberListViewPage()));
+                          builder: (context) => const MemeberListViewPage()));
                 })),
       ],
     );

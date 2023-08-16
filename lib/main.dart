@@ -60,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     // TODO: 페이지 초기 로드속도 개선 필요, fetchData 방식으로 해결 시도해볼 것
+    // TODO: Shared Preferences를 이용한 로그인 정보 저장을 통해 반응속도 개선 시도해볼 것
 
     if (user != null) {
       if (Provider.of<CurrentUserModel>(context, listen: false).user == null) {

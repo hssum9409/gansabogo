@@ -88,6 +88,9 @@ class _MemeberListViewPageState extends State<MemeberListViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: 레이아웃 정리 필요
+    // TODO: 검색 기능 구현
+    // TODO: 필터 선택 기능 구현
     return Scaffold(
         body: Container(
             color: const Color(0xFFCEA176),
@@ -165,7 +168,57 @@ class _MemeberListViewPageState extends State<MemeberListViewPage> {
                                         : gansaViewWidget(),
                                   ]))
                                 ],
-                              ))
+                              )),
+                              const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Divider(
+                                      color: Colors.white, thickness: 4)),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: InkWell(
+                                  onTap: () {},
+                                  child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisSize: MainAxisSize.max,
+                                      children: [
+                                        Icon(
+                                          Icons.add_circle_outline,
+                                          size: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.2 >
+                                                  48
+                                              ? 48
+                                              : MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.2,
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          userPosition == 'paster'
+                                              ? '진원 추가'
+                                              : '팀원 추가',
+                                          style: GoogleFonts.eastSeaDokdo(
+                                              height: 0.8,
+                                              fontSize: MediaQuery.of(context)
+                                                              .size
+                                                              .height *
+                                                          0.2 >
+                                                      48
+                                                  ? 48
+                                                  : MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.2,
+                                              color: Colors.white),
+                                        )
+                                      ]),
+                                ),
+                              ),
                             ],
                           )
                         : const Center(child: CircularProgressIndicator())))));
@@ -537,25 +590,6 @@ class _MemeberListViewPageState extends State<MemeberListViewPage> {
                                                   style:
                                                       GoogleFonts.eastSeaDokdo(
                                                           height: 0.8,
-                                                          color:
-                                                              Colors.blue[600]),
-                                                )))),
-                                    Expanded(
-                                        flex: 1,
-                                        child: FittedBox(
-                                            fit: BoxFit.fitWidth,
-                                            child: TextButton(
-                                                style: ButtonStyle(
-                                                    padding:
-                                                        MaterialStateProperty
-                                                            .all(EdgeInsets
-                                                                .zero)),
-                                                onPressed: () {},
-                                                child: Text(
-                                                  '중보그룹',
-                                                  style:
-                                                      GoogleFonts.eastSeaDokdo(
-                                                          height: 0.8,
                                                           color: Colors
                                                               .amber[800]),
                                                 )))),
@@ -571,7 +605,7 @@ class _MemeberListViewPageState extends State<MemeberListViewPage> {
                                                                 .zero)),
                                                 onPressed: () {},
                                                 child: Text(
-                                                  '　삭제　',
+                                                  '출석관리',
                                                   style:
                                                       GoogleFonts.eastSeaDokdo(
                                                     height: 0.8,

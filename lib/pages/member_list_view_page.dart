@@ -8,14 +8,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class MemeberListViewPage extends StatefulWidget {
-  const MemeberListViewPage({super.key});
+class MemberListViewPage extends StatefulWidget {
+  const MemberListViewPage({super.key});
 
   @override
-  State<MemeberListViewPage> createState() => _MemeberListViewPageState();
+  State<MemberListViewPage> createState() => _MemberListViewPageState();
 }
 
-class _MemeberListViewPageState extends State<MemeberListViewPage> {
+class _MemberListViewPageState extends State<MemberListViewPage> {
   String? userPosition;
 
   bool isLoaded = false;

@@ -283,16 +283,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         ? 120
                         : MediaQuery.of(context).size.height * 0.15,
                     child: Image.asset(
-                        'asset/images/buttons/read_report_button.png')),
-                onTap: () {})),
-        Flexible(
-            fit: FlexFit.loose,
-            child: InkWell(
-                child: SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.15 > 120
-                        ? 120
-                        : MediaQuery.of(context).size.height * 0.15,
-                    child: Image.asset(
                         'asset/images/buttons/team_member_management_button.png')),
                 onTap: () {})),
       ],

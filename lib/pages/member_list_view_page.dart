@@ -24,6 +24,9 @@ class _MemberListViewPageState extends State<MemberListViewPage> {
   Map<String, dynamic>? campMemberData;
   List<Map<String, dynamic>>? teamMemberData;
 
+  String searchKeyword = '';
+  String campID = '';
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +42,7 @@ class _MemberListViewPageState extends State<MemberListViewPage> {
         .setUser(FirebaseAuth.instance.currentUser!);
 
     if (userPosition == 'paster') {
-      String campID = Provider.of<CurrentUserModel>(context, listen: false)
+      campID = Provider.of<CurrentUserModel>(context, listen: false)
           .userData!['managedCamp']
           .keys
           .toList()[0];
@@ -49,7 +52,7 @@ class _MemberListViewPageState extends State<MemberListViewPage> {
           .doc(campID)
           .get()
           .then((value) {
-        campMemberData = value.data()?['team'];
+        campMemberData = value.data()?['team'].cast<String, dynamic>();
       });
 
       campMemberData!.forEach((key, value) {
@@ -57,11 +60,11 @@ class _MemberListViewPageState extends State<MemberListViewPage> {
       });
 
       campMemberData!.forEach((key, value) {
-        campMemberData![key].sort(
+        value.sort(
             (a, b) => (a['name'] as String).compareTo(b['name'] as String));
       });
     } else {
-      String campID = Provider.of<CurrentUserModel>(context, listen: false)
+      campID = Provider.of<CurrentUserModel>(context, listen: false)
           .userData!['managedTeam']
           .keys
           .toList()[0];
@@ -86,10 +89,29 @@ class _MemberListViewPageState extends State<MemberListViewPage> {
     });
   }
 
+  Future<void> goToJungboGroup({
+    required String campID,
+    required String teamName,
+    required String memberName,
+  }) async {
+    // TODO: 팀내 동명이인 처리방식 구상 필요
+    setState(() {
+      (campMemberData!['중보자'] as List<dynamic>).add(campMemberData![teamName]
+          .firstWhere((element) => element['name'] == memberName));
+
+      campMemberData![teamName]
+          .removeWhere((element) => element['name'] == memberName);
+    });
+
+    await FirebaseFirestore.instance
+        .collection('camp')
+        .doc(campID)
+        .update({'team': campMemberData});
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: 레이아웃 정리 필요
-    // TODO: 검색 기능 및 필터 선택 기능 구현
     return Scaffold(
         body: Container(
             color: const Color(0xFFCEA176),
@@ -137,8 +159,8 @@ class _MemberListViewPageState extends State<MemberListViewPage> {
                                                             .size
                                                             .height *
                                                         0.2 >
-                                                    96
-                                                ? 96
+                                                    64
+                                                ? 64
                                                 : MediaQuery.of(context)
                                                         .size
                                                         .height *
@@ -151,11 +173,65 @@ class _MemberListViewPageState extends State<MemberListViewPage> {
                                                       .size
                                                       .height *
                                                   0.1 >
-                                              32
-                                          ? 32
+                                              16
+                                          ? 16
                                           : MediaQuery.of(context).size.height *
                                               0.1,
-                                    )
+                                    ),
+                                    Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 16.0),
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              userPosition == 'paster'
+                                                  ? '진원 검색'
+                                                  : '팀원 검색',
+                                              style: GoogleFonts.eastSeaDokdo(
+                                                  height: 0.8,
+                                                  fontSize: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .height *
+                                                              0.2 >
+                                                          36
+                                                      ? 36
+                                                      : MediaQuery.of(context)
+                                                              .size
+                                                              .height *
+                                                          0.2,
+                                                  color: Colors.white),
+                                            ),
+                                            const SizedBox(
+                                              width: 16,
+                                            ),
+                                            Expanded(
+                                              child: TextFormField(
+                                                textAlign: TextAlign.center,
+                                                style: GoogleFonts.eastSeaDokdo(
+                                                  height: 0.8,
+                                                  fontSize: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .height *
+                                                              0.2 >
+                                                          24
+                                                      ? 24
+                                                      : MediaQuery.of(context)
+                                                              .size
+                                                              .height *
+                                                          0.2,
+                                                  color: Colors.white,
+                                                ),
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    searchKeyword = value;
+                                                  });
+                                                },
+                                              ),
+                                            )
+                                          ],
+                                        ))
                                   ]),
                               Expanded(
                                   child: CustomScrollView(
@@ -246,8 +322,8 @@ class _MemberListViewPageState extends State<MemberListViewPage> {
                           style: GoogleFonts.eastSeaDokdo(
                               height: 0.8,
                               fontSize:
-                                  MediaQuery.of(context).size.height * 0.2 > 64
-                                      ? 64
+                                  MediaQuery.of(context).size.height * 0.2 > 48
+                                      ? 48
                                       : MediaQuery.of(context).size.height *
                                           0.2,
                               color: Colors.white),
@@ -261,255 +337,249 @@ class _MemberListViewPageState extends State<MemberListViewPage> {
                               children: [
                                 for (var teamMember
                                     in campMemberData![teamName])
-                                  AnimatedSize(
-                                    duration: const Duration(milliseconds: 400),
-                                    child: isExpanded[teamName]!
-                                        ? Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              const Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: 4, bottom: 4),
-                                                child: Divider(
-                                                  color: Colors.white,
-                                                  thickness: 1,
+                                  if (searchKeyword == '' ||
+                                      teamMember['name']
+                                          .contains(searchKeyword))
+                                    AnimatedSize(
+                                      duration:
+                                          const Duration(milliseconds: 400),
+                                      child: isExpanded[teamName]!
+                                          ? Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      top: 4, bottom: 4),
+                                                  child: Divider(
+                                                    color: Colors.white,
+                                                    thickness: 1,
+                                                  ),
                                                 ),
-                                              ),
-                                              Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      Expanded(
-                                                        flex: 3,
-                                                        child: FittedBox(
-                                                          fit: BoxFit.contain,
-                                                          child: Text(
-                                                            teamMember['name'],
-                                                            style: GoogleFonts.eastSeaDokdo(
-                                                                height: 0.8,
-                                                                fontSize: MediaQuery.of(context).size.height *
-                                                                            0.2 >
-                                                                        48
-                                                                    ? 48
-                                                                    : MediaQuery.of(context)
-                                                                            .size
-                                                                            .height *
-                                                                        0.2,
-                                                                color: Colors
-                                                                    .white),
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        Expanded(
+                                                          flex: 3,
+                                                          child: FittedBox(
+                                                            fit: BoxFit.contain,
+                                                            child: Text(
+                                                              teamMember[
+                                                                  'name'],
+                                                              style: GoogleFonts.eastSeaDokdo(
+                                                                  height: 0.8,
+                                                                  fontSize: MediaQuery.of(context).size.height *
+                                                                              0.2 >
+                                                                          36
+                                                                      ? 36
+                                                                      : MediaQuery.of(context)
+                                                                              .size
+                                                                              .height *
+                                                                          0.2,
+                                                                  color: Colors
+                                                                      .white),
+                                                            ),
                                                           ),
                                                         ),
-                                                      ),
-                                                      Expanded(
-                                                          flex: 7,
-                                                          child: Row(
-                                                            mainAxisAlignment:
-                                                                MainAxisAlignment
-                                                                    .start,
-                                                            crossAxisAlignment:
-                                                                CrossAxisAlignment
-                                                                    .start,
-                                                            children: [
-                                                              // TODO : 버튼 기능구현
-                                                              Expanded(
-                                                                  flex: 1,
-                                                                  child: FittedBox(
-                                                                      fit: BoxFit.fitWidth,
-                                                                      child: TextButton(
-                                                                          style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
-                                                                          onPressed: () {},
+                                                        Expanded(
+                                                            flex: 7,
+                                                            child: Row(
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .start,
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                // TODO : 버튼 기능구현
+                                                                Expanded(
+                                                                    flex: 1,
+                                                                    child: FittedBox(
+                                                                        fit: BoxFit.fitWidth,
+                                                                        child: TextButton(
+                                                                            style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
+                                                                            onPressed: () {},
+                                                                            child: Text(
+                                                                              '정보수정',
+                                                                              style: GoogleFonts.eastSeaDokdo(height: 0.8, color: Colors.blue[600]),
+                                                                            )))),
+                                                                Expanded(
+                                                                    flex: 1,
+                                                                    child: FittedBox(
+                                                                        fit: BoxFit.fitWidth,
+                                                                        child: TextButton(
+                                                                            style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
+                                                                            onPressed: () {
+                                                                              goToJungboGroup(campID: campID, teamName: teamName, memberName: teamMember['name']);
+                                                                            },
+                                                                            child: Text(
+                                                                              '중보그룹',
+                                                                              style: GoogleFonts.eastSeaDokdo(height: 0.8, color: Colors.amber[800]),
+                                                                            )))),
+                                                                Expanded(
+                                                                    flex: 1,
+                                                                    child: FittedBox(
+                                                                        fit: BoxFit.fitWidth,
+                                                                        child: TextButton(
+                                                                            style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
+                                                                            onPressed: () {},
+                                                                            child: Text(
+                                                                              '　삭제　',
+                                                                              style: GoogleFonts.eastSeaDokdo(
+                                                                                height: 0.8,
+                                                                                color: Colors.red,
+                                                                              ),
+                                                                            ))))
+                                                              ],
+                                                            )),
+                                                      ],
+                                                    ),
+                                                    Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 16,
+                                                                left: 8,
+                                                                right: 8),
+                                                        child: Column(
+                                                          children: [
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  flex: 5,
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                          flex:
+                                                                              5,
                                                                           child: Text(
-                                                                            '정보수정',
-                                                                            style:
-                                                                                GoogleFonts.eastSeaDokdo(height: 0.8, color: Colors.blue[600]),
-                                                                          )))),
-                                                              Expanded(
-                                                                  flex: 1,
-                                                                  child: FittedBox(
-                                                                      fit: BoxFit.fitWidth,
-                                                                      child: TextButton(
-                                                                          style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
-                                                                          onPressed: () {},
+                                                                              '성별',
+                                                                              style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: Colors.white))),
+                                                                      Expanded(
+                                                                          flex:
+                                                                              5,
                                                                           child: Text(
-                                                                            '중보그룹',
-                                                                            style:
-                                                                                GoogleFonts.eastSeaDokdo(height: 0.8, color: Colors.amber[800]),
-                                                                          )))),
-                                                              Expanded(
-                                                                  flex: 1,
-                                                                  child: FittedBox(
-                                                                      fit: BoxFit.fitWidth,
-                                                                      child: TextButton(
-                                                                          style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
-                                                                          onPressed: () {},
+                                                                              teamMember['gender'] != null && teamMember['gender'] != ''
+                                                                                  ? teamMember['gender'] == '남'
+                                                                                      ? '형제'
+                                                                                      : '자매'
+                                                                                  : '미입력',
+                                                                              style: GoogleFonts.eastSeaDokdo(
+                                                                                  height: 0.8,
+                                                                                  fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2,
+                                                                                  color: teamMember['gender'] != null
+                                                                                      ? teamMember['gender'] == '남'
+                                                                                          ? Colors.blue[600]
+                                                                                          : Colors.red
+                                                                                      : Colors.grey[600]))),
+                                                                    ],
+                                                                  ),
+                                                                ),
+                                                                const Expanded(
+                                                                    flex: 1,
+                                                                    child: SizedBox
+                                                                        .shrink()),
+                                                                Expanded(
+                                                                  flex: 5,
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                          flex:
+                                                                              5,
                                                                           child: Text(
-                                                                            '　삭제　',
-                                                                            style:
-                                                                                GoogleFonts.eastSeaDokdo(
-                                                                              height: 0.8,
-                                                                              color: Colors.red,
-                                                                            ),
-                                                                          ))))
-                                                            ],
-                                                          )),
-                                                    ],
-                                                  ),
-                                                  Padding(
-                                                      padding:
-                                                          const EdgeInsets.only(
-                                                              top: 16,
-                                                              left: 8,
-                                                              right: 8),
-                                                      child: Column(
-                                                        children: [
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                flex: 5,
-                                                                child: Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                        flex: 5,
-                                                                        child: Text(
-                                                                            '성별',
-                                                                            style: GoogleFonts.eastSeaDokdo(
-                                                                                height: 0.8,
-                                                                                fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2,
-                                                                                color: Colors.white))),
-                                                                    Expanded(
-                                                                        flex: 5,
-                                                                        child: Text(
-                                                                            teamMember['gender'] != null && teamMember['gender'] != ''
-                                                                                ? teamMember['gender'] == '남'
-                                                                                    ? '형제'
-                                                                                    : '자매'
-                                                                                : '미입력',
-                                                                            style: GoogleFonts.eastSeaDokdo(
-                                                                                height: 0.8,
-                                                                                fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2,
-                                                                                color: teamMember['gender'] != null
-                                                                                    ? teamMember['gender'] == '남'
-                                                                                        ? Colors.blue[600]
-                                                                                        : Colors.red
-                                                                                    : Colors.grey[600]))),
-                                                                  ],
+                                                                              '기수',
+                                                                              style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: Colors.white))),
+                                                                      Expanded(
+                                                                          flex:
+                                                                              5,
+                                                                          child: Text(
+                                                                              teamMember['generation'] != null && teamMember['generation'] != '' ? '${teamMember['generation']} 기' : '미입력',
+                                                                              style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: teamMember['generation'] != null ? Colors.white : Colors.grey[600]))),
+                                                                    ],
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              const Expanded(
-                                                                  flex: 1,
-                                                                  child: SizedBox
-                                                                      .shrink()),
-                                                              Expanded(
-                                                                flex: 5,
-                                                                child: Row(
-                                                                  children: [
-                                                                    Expanded(
+                                                              ],
+                                                            ),
+                                                            const SizedBox(
+                                                                height: 8),
+                                                            Row(
+                                                              children: [
+                                                                Expanded(
+                                                                  flex: 5,
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                          flex:
+                                                                              5,
+                                                                          child: Text(
+                                                                              '생일',
+                                                                              style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: Colors.white))),
+                                                                      Expanded(
                                                                         flex: 5,
-                                                                        child: Text(
-                                                                            '기수',
-                                                                            style: GoogleFonts.eastSeaDokdo(
-                                                                                height: 0.8,
-                                                                                fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2,
-                                                                                color: Colors.white))),
-                                                                    Expanded(
-                                                                        flex: 5,
-                                                                        child: Text(
-                                                                            teamMember['generation'] != null && teamMember['generation'] != ''
-                                                                                ? '${teamMember['generation']} 기'
-                                                                                : '미입력',
-                                                                            style: GoogleFonts.eastSeaDokdo(
-                                                                                height: 0.8,
-                                                                                fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2,
-                                                                                color: teamMember['generation'] != null ? Colors.white : Colors.grey[600]))),
-                                                                  ],
+                                                                        child: teamMember['birthDate'] !=
+                                                                                null
+                                                                            ? FittedBox(
+                                                                                fit: BoxFit.fitWidth,
+                                                                                child: Text((teamMember['birthDate'] as Timestamp).toDate().toString().substring(0, 10), style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: Colors.white)))
+                                                                            : Text('미입력', style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: Colors.grey[600])),
+                                                                      )
+                                                                    ],
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                          const SizedBox(
-                                                              height: 8),
-                                                          Row(
-                                                            children: [
-                                                              Expanded(
-                                                                flex: 5,
-                                                                child: Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                        flex: 5,
-                                                                        child: Text(
-                                                                            '생일',
-                                                                            style: GoogleFonts.eastSeaDokdo(
-                                                                                height: 0.8,
-                                                                                fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2,
-                                                                                color: Colors.white))),
-                                                                    Expanded(
-                                                                      flex: 5,
-                                                                      child: teamMember['birthDate'] !=
-                                                                              null
-                                                                          ? FittedBox(
-                                                                              fit: BoxFit.fitWidth,
-                                                                              child: Text((teamMember['birthDate'] as Timestamp).toDate().toString().substring(0, 10), style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: Colors.white)))
-                                                                          : Text('미입력', style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: Colors.grey[600])),
-                                                                    )
-                                                                  ],
+                                                                const Expanded(
+                                                                    flex: 1,
+                                                                    child: SizedBox
+                                                                        .shrink()),
+                                                                Expanded(
+                                                                  flex: 5,
+                                                                  child: Row(
+                                                                    children: [
+                                                                      Expanded(
+                                                                          flex:
+                                                                              5,
+                                                                          child: Text(
+                                                                              '연락처',
+                                                                              style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: Colors.white))),
+                                                                      Expanded(
+                                                                          flex:
+                                                                              5,
+                                                                          child: teamMember['phoneNumber'] != null && teamMember['phoneNumber'] != ''
+                                                                              ? FittedBox(fit: BoxFit.fitWidth, child: Text(teamMember['phoneNumber'], style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: Colors.white)))
+                                                                              : Text('미입력', style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: Colors.grey[600]))),
+                                                                    ],
+                                                                  ),
                                                                 ),
-                                                              ),
-                                                              const Expanded(
-                                                                  flex: 1,
-                                                                  child: SizedBox
-                                                                      .shrink()),
-                                                              Expanded(
-                                                                flex: 5,
-                                                                child: Row(
-                                                                  children: [
-                                                                    Expanded(
-                                                                        flex: 5,
-                                                                        child: Text(
-                                                                            '연락처',
-                                                                            style: GoogleFonts.eastSeaDokdo(
-                                                                                height: 0.8,
-                                                                                fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2,
-                                                                                color: Colors.white))),
-                                                                    Expanded(
-                                                                        flex: 5,
-                                                                        child: teamMember['phoneNumber'] != null &&
-                                                                                teamMember['phoneNumber'] != ''
-                                                                            ? FittedBox(fit: BoxFit.fitWidth, child: Text(teamMember['phoneNumber'], style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: Colors.white)))
-                                                                            : Text('미입력', style: GoogleFonts.eastSeaDokdo(height: 0.8, fontSize: MediaQuery.of(context).size.height * 0.2 > 32 ? 32 : MediaQuery.of(context).size.height * 0.2, color: Colors.grey[600]))),
-                                                                  ],
-                                                                ),
-                                                              ),
-                                                            ],
-                                                          ),
-                                                        ],
-                                                      )),
-                                                ],
-                                              ),
-                                              const Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: 4, bottom: 4),
-                                                child: Divider(
-                                                  color: Colors.white,
-                                                  thickness: 1,
+                                                              ],
+                                                            ),
+                                                          ],
+                                                        )),
+                                                  ],
                                                 ),
-                                              ),
-                                            ],
-                                          )
-                                        : const SizedBox.shrink(),
-                                  )
+                                                const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      top: 4, bottom: 4),
+                                                  child: Divider(
+                                                    color: Colors.white,
+                                                    thickness: 1,
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                          : const SizedBox.shrink(),
+                                    )
                               ])),
                       const Padding(
                           padding: EdgeInsets.only(top: 16, bottom: 16),

@@ -423,6 +423,7 @@ class _MemberListViewPageState extends State<MemberListViewPage> {
                                                                         child: TextButton(
                                                                             style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
                                                                             onPressed: () {
+                                                                              // TODO: dialog 확인 후 처리
                                                                               goToJungboGroup(campID: campID, teamName: teamName, memberName: teamMember['name']);
                                                                             },
                                                                             child: Text(

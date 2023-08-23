@@ -34,6 +34,8 @@ class _ReportWritePageState extends State<ReportWritePage> {
   String? campId;
   String? teamName;
 
+  String searchKeyword = '';
+
   @override
   void initState() {
     super.initState();
@@ -62,6 +64,8 @@ class _ReportWritePageState extends State<ReportWritePage> {
           .then((value) {
         teamMemberData =
             value.data()!['team'][teamName].cast<Map<String, dynamic>>() ?? [];
+        situationData = value.data()!['recentSituation']?[teamName] ??
+            {'teamSituation': '', 'gansaSituation': ''};
 
         teamMemberData!.sort((a, b) => a['name'].compareTo(b['name']));
       });
@@ -70,13 +74,13 @@ class _ReportWritePageState extends State<ReportWritePage> {
 
       reportTextInfo['teamSituation'] = {
         'controller':
-            TextEditingController(text: situationData['teamSituation']),
+            TextEditingController(text: situationData['teamSituation'] ?? ''),
         'isChanged': false
       };
 
       reportTextInfo['gansaSituation'] = {
         'controller':
-            TextEditingController(text: situationData['gansaSituation']),
+            TextEditingController(text: situationData['gansaSituation'] ?? ''),
         'isChanged': false
       };
 
@@ -154,8 +158,7 @@ class _ReportWritePageState extends State<ReportWritePage> {
     return '$year년 $month월 $weekNum주차';
   }
 
-  Future<void> reportUpdate(
-      {required String memberName, required String weekNumString}) async {
+  Future<void> reportUpdate({required String memberName}) async {
     for (var element in teamMemberData!) {
       if (element['name'] == memberName) {
         element['attendance'] = memberAttendanceData[memberName];
@@ -187,6 +190,29 @@ class _ReportWritePageState extends State<ReportWritePage> {
     });
   }
 
+  Future<void> situationUpdate() async {
+    situationData['teamSituation'] =
+        reportTextInfo['teamSituation']!['controller'].text;
+    situationData['gansaSituation'] =
+        reportTextInfo['gansaSituation']!['controller'].text;
+
+    FirebaseFirestore.instance.runTransaction((transaction) async {
+      transaction
+          .update(FirebaseFirestore.instance.collection('camp').doc(campId), {
+        'recentSituation.$teamName': situationData,
+      });
+
+      transaction.set(
+          FirebaseFirestore.instance
+              .collection('camp')
+              .doc(campId)
+              .collection('report')
+              .doc(teamName),
+          {weekNumString: situationData},
+          SetOptions(merge: true));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -209,8 +235,8 @@ class _ReportWritePageState extends State<ReportWritePage> {
                                                           .size
                                                           .height *
                                                       0.1 >
-                                                  32
-                                              ? 32
+                                                  16
+                                              ? 16
                                               : MediaQuery.of(context)
                                                       .size
                                                       .height *
@@ -219,8 +245,8 @@ class _ReportWritePageState extends State<ReportWritePage> {
                                                           .size
                                                           .height *
                                                       0.05 >
-                                                  16
-                                              ? 16
+                                                  8
+                                              ? 8
                                               : MediaQuery.of(context)
                                                       .size
                                                       .height *
@@ -234,8 +260,8 @@ class _ReportWritePageState extends State<ReportWritePage> {
                                                             .size
                                                             .height *
                                                         0.2 >
-                                                    96
-                                                ? 96
+                                                    72
+                                                ? 72
                                                 : MediaQuery.of(context)
                                                         .size
                                                         .height *
@@ -256,34 +282,133 @@ class _ReportWritePageState extends State<ReportWritePage> {
                                                       .height *
                                                   0.05),
                                       child: Center(
-                                          child: Text(
-                                        '$weekNumString 간사보고서',
-                                        style: GoogleFonts.eastSeaDokdo(
-                                            height: 0.8,
-                                            fontSize: MediaQuery.of(context)
-                                                            .size
-                                                            .height *
-                                                        0.2 >
-                                                    48
-                                                ? 48
-                                                : MediaQuery.of(context)
-                                                        .size
-                                                        .height *
-                                                    0.2,
-                                            color: Colors.white),
-                                      )),
+                                        child: FittedBox(
+                                          fit: BoxFit.contain,
+                                          child: Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 16, right: 16),
+                                              child: Text(
+                                                '$weekNumString 간사보고서',
+                                                style: GoogleFonts.eastSeaDokdo(
+                                                    height: 0.8,
+                                                    fontSize: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .height *
+                                                                0.2 >
+                                                            48
+                                                        ? 48
+                                                        : MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.2,
+                                                    color: Colors.white),
+                                              )),
+                                        ),
+                                      ),
                                     ),
-                                    SizedBox(
-                                      height: MediaQuery.of(context)
-                                                      .size
-                                                      .height *
-                                                  0.1 >
-                                              32
-                                          ? 32
-                                          : MediaQuery.of(context).size.height *
-                                              0.1,
-                                    )
                                   ]),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Expanded(
+                                      flex: 7,
+                                      child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 16.0),
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                '팀원검색',
+                                                style: GoogleFonts.eastSeaDokdo(
+                                                    height: 0.8,
+                                                    fontSize: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .height *
+                                                                0.2 >
+                                                            36
+                                                        ? 36
+                                                        : MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.2,
+                                                    color: Colors.white),
+                                              ),
+                                              const SizedBox(
+                                                width: 16,
+                                              ),
+                                              Expanded(
+                                                child: TextFormField(
+                                                  textAlign: TextAlign.center,
+                                                  style:
+                                                      GoogleFonts.eastSeaDokdo(
+                                                    height: 0.8,
+                                                    fontSize: MediaQuery.of(
+                                                                        context)
+                                                                    .size
+                                                                    .height *
+                                                                0.2 >
+                                                            24
+                                                        ? 24
+                                                        : MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.2,
+                                                    color: Colors.white,
+                                                  ),
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      searchKeyword = value;
+                                                    });
+                                                  },
+                                                ),
+                                              )
+                                            ],
+                                          ))),
+                                  Expanded(
+                                      flex: 3,
+                                      child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              right: 16.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              TextButton(
+                                                style: ButtonStyle(
+                                                    alignment:
+                                                        Alignment.centerRight,
+                                                    padding:
+                                                        MaterialStateProperty
+                                                            .all(EdgeInsets
+                                                                .zero)),
+                                                onPressed: () {
+                                                  // TODO: 일괄저장 기능 구현
+                                                },
+                                                child: Text(
+                                                  '일괄저장',
+                                                  style: GoogleFonts.eastSeaDokdo(
+                                                      fontSize: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .height *
+                                                                  0.2 >
+                                                              36
+                                                          ? 36
+                                                          : MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .height *
+                                                              0.2,
+                                                      color: Colors.red),
+                                                ),
+                                              ),
+                                            ],
+                                          )))
+                                ],
+                              ),
                               Expanded(
                                   child: CustomScrollView(
                                 slivers: <Widget>[
@@ -361,214 +486,226 @@ class _ReportWritePageState extends State<ReportWritePage> {
                 thickness: 1,
               ),
             ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 4, bottom: 4),
-                  child: Divider(
-                    color: Colors.white,
-                    thickness: 1,
+            if (searchKeyword == '')
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 4, bottom: 4),
+                    child: Divider(
+                      color: Colors.white,
+                      thickness: 1,
+                    ),
                   ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    IntrinsicHeight(
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '팀 보고사항',
-                              style: GoogleFonts.eastSeaDokdo(
-                                  height: 0.9,
-                                  fontSize:
-                                      MediaQuery.of(context).size.height * 0.2 >
-                                              64
-                                          ? 64
-                                          : MediaQuery.of(context).size.height *
-                                              0.2,
-                                  color: Colors.white),
-                            ),
-                            TextButton(
-                              style: ButtonStyle(
-                                  padding: MaterialStateProperty.all(
-                                      EdgeInsets.zero)),
-                              onPressed: () {
-                                // TODO: 팀 보고사항 및 기도요청 수정 기능구현
-                              },
-                              child: Text(
-                                '저장',
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      IntrinsicHeight(
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '팀 보고사항',
                                 style: GoogleFonts.eastSeaDokdo(
+                                    height: 0.9,
                                     fontSize: MediaQuery.of(context)
                                                     .size
                                                     .height *
                                                 0.2 >
-                                            36
-                                        ? 36
+                                            64
+                                        ? 64
                                         : MediaQuery.of(context).size.height *
                                             0.2,
-                                    color: Colors.red),
+                                    color: Colors.white),
                               ),
-                            ),
-                          ]),
-                    ),
-                    TextFormField(
-                      controller:
-                          reportTextInfo['teamSituation']!['controller']!,
-                      maxLines: 3,
-                      maxLength: 1000,
-                      style: GoogleFonts.eastSeaDokdo(
-                        height: 0.8,
-                        fontSize: MediaQuery.of(context).size.height * 0.2 > 24
-                            ? 24
-                            : MediaQuery.of(context).size.height * 0.2,
-                        color: reportTextInfo['teamSituation']!['isChanged']
-                            ? Colors.white
-                            : Colors.blue,
-                      ),
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          counterStyle: TextStyle(color: Colors.white)),
-                      onChanged: (value) {
-                        if (!reportTextInfo['teamSituation']!['isChanged']) {
-                          setState(() {
-                            reportTextInfo['teamSituation']!['isChanged'] =
-                                true;
-                          });
-                        }
-                      },
-                    ),
-                  ],
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 4, bottom: 4),
-                  child: Divider(
-                    color: Colors.white,
-                    thickness: 1,
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(top: 4, bottom: 4),
-                  child: Divider(
-                    color: Colors.white,
-                    thickness: 1,
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    IntrinsicHeight(
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '간사 보고사항',
-                              style: GoogleFonts.eastSeaDokdo(
-                                  height: 0.9,
-                                  fontSize:
-                                      MediaQuery.of(context).size.height * 0.2 >
-                                              64
-                                          ? 64
+                              TextButton(
+                                style: ButtonStyle(
+                                    padding: MaterialStateProperty.all(
+                                        EdgeInsets.zero)),
+                                onPressed: () {
+                                  situationUpdate();
+                                },
+                                child: Text(
+                                  '저장',
+                                  style: GoogleFonts.eastSeaDokdo(
+                                      fontSize: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.2 >
+                                              36
+                                          ? 36
                                           : MediaQuery.of(context).size.height *
                                               0.2,
-                                  color: Colors.white),
+                                      color: Colors.red),
+                                ),
+                              ),
+                            ]),
+                      ),
+                      TextFormField(
+                        controller:
+                            reportTextInfo['teamSituation']!['controller']!,
+                        minLines: 3,
+                        maxLines: null,
+                        maxLength: 1000,
+                        style: GoogleFonts.eastSeaDokdo(
+                          height: 0.8,
+                          fontSize:
+                              MediaQuery.of(context).size.height * 0.2 > 24
+                                  ? 24
+                                  : MediaQuery.of(context).size.height * 0.2,
+                          color: reportTextInfo['teamSituation']!['isChanged']
+                              ? Colors.white
+                              : Colors.blue,
+                        ),
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: const BorderSide(color: Colors.white),
                             ),
-                            TextButton(
-                              style: ButtonStyle(
-                                  padding: MaterialStateProperty.all(
-                                      EdgeInsets.zero)),
-                              onPressed: () {
-                                // TODO: 간사 보고사항 및 기도요청 수정 기능구현
-                              },
-                              child: Text(
-                                '저장',
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: const BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: const BorderSide(color: Colors.white),
+                            ),
+                            counterStyle: const TextStyle(color: Colors.white)),
+                        onChanged: (value) {
+                          if (!reportTextInfo['teamSituation']!['isChanged']) {
+                            setState(() {
+                              reportTextInfo['teamSituation']!['isChanged'] =
+                                  true;
+                            });
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 4, bottom: 4),
+                    child: Divider(
+                      color: Colors.white,
+                      thickness: 1,
+                    ),
+                  ),
+                ],
+              ),
+            if (searchKeyword == '')
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(top: 4, bottom: 4),
+                    child: Divider(
+                      color: Colors.white,
+                      thickness: 1,
+                    ),
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      IntrinsicHeight(
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '간사 보고사항',
                                 style: GoogleFonts.eastSeaDokdo(
+                                    height: 0.9,
                                     fontSize: MediaQuery.of(context)
                                                     .size
                                                     .height *
                                                 0.2 >
-                                            36
-                                        ? 36
+                                            64
+                                        ? 64
                                         : MediaQuery.of(context).size.height *
                                             0.2,
-                                    color: Colors.red),
+                                    color: Colors.white),
                               ),
-                            ),
-                          ]),
-                    ),
-                    TextFormField(
-                      controller:
-                          reportTextInfo['gansaSituation']!['controller']!,
-                      maxLines: 3,
-                      maxLength: 1000,
-                      style: GoogleFonts.eastSeaDokdo(
-                        height: 0.8,
-                        fontSize: MediaQuery.of(context).size.height * 0.2 > 24
-                            ? 24
-                            : MediaQuery.of(context).size.height * 0.2,
-                        color: reportTextInfo['gansaSituation']!['isChanged']
-                            ? Colors.white
-                            : Colors.blue,
+                              TextButton(
+                                style: ButtonStyle(
+                                    padding: MaterialStateProperty.all(
+                                        EdgeInsets.zero)),
+                                onPressed: () {
+                                  situationUpdate();
+                                },
+                                child: Text(
+                                  '저장',
+                                  style: GoogleFonts.eastSeaDokdo(
+                                      fontSize: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.2 >
+                                              36
+                                          ? 36
+                                          : MediaQuery.of(context).size.height *
+                                              0.2,
+                                      color: Colors.red),
+                                ),
+                              ),
+                            ]),
                       ),
-                      decoration: InputDecoration(
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12.0),
-                            borderSide: BorderSide(color: Colors.white),
-                          ),
-                          counterStyle: TextStyle(color: Colors.white)),
-                      onChanged: (value) {
-                        if (!reportTextInfo['gansaSituation']!['isChanged']) {
-                          setState(() {
-                            reportTextInfo['gansaSituation']!['isChanged'] =
-                                true;
-                          });
-                        }
-                      },
-                    ),
-                  ],
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 4, bottom: 4),
-                  child: Divider(
-                    color: Colors.white,
-                    thickness: 1,
+                      TextFormField(
+                        controller:
+                            reportTextInfo['gansaSituation']!['controller']!,
+                        minLines: 3,
+                        maxLines: null,
+                        maxLength: 1000,
+                        style: GoogleFonts.eastSeaDokdo(
+                          height: 0.8,
+                          fontSize:
+                              MediaQuery.of(context).size.height * 0.2 > 24
+                                  ? 24
+                                  : MediaQuery.of(context).size.height * 0.2,
+                          color: reportTextInfo['gansaSituation']!['isChanged']
+                              ? Colors.white
+                              : Colors.blue,
+                        ),
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: const BorderSide(color: Colors.white),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: const BorderSide(color: Colors.white),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12.0),
+                              borderSide: const BorderSide(color: Colors.white),
+                            ),
+                            counterStyle: const TextStyle(color: Colors.white)),
+                        onChanged: (value) {
+                          if (!reportTextInfo['gansaSituation']!['isChanged']) {
+                            setState(() {
+                              reportTextInfo['gansaSituation']!['isChanged'] =
+                                  true;
+                            });
+                          }
+                        },
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 4, bottom: 4),
+                    child: Divider(
+                      color: Colors.white,
+                      thickness: 1,
+                    ),
+                  ),
+                ],
+              ),
             for (var teamMember in teamMemberData!)
-              if (teamMember['isGansa'] == false)
+              if (teamMember['isGansa'] == false &&
+                  (searchKeyword == '' ||
+                      (teamMember['name'] as String).contains(searchKeyword)))
                 Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -647,8 +784,7 @@ class _ReportWritePageState extends State<ReportWritePage> {
                                                 teamMember['name']]!;
 
                                         reportUpdate(
-                                            memberName: teamMember['name'],
-                                            weekNumString: weekNumString);
+                                            memberName: teamMember['name']);
                                       },
                                       child: Text(
                                         '저장',
@@ -785,7 +921,8 @@ class _ReportWritePageState extends State<ReportWritePage> {
                         TextFormField(
                           controller: reportTextInfo[teamMember['name']]![
                               'controller']!,
-                          maxLines: 3,
+                          minLines: 3,
+                          maxLines: null,
                           maxLength: 1000,
                           style: GoogleFonts.eastSeaDokdo(
                             height: 0.8,
@@ -801,17 +938,21 @@ class _ReportWritePageState extends State<ReportWritePage> {
                           decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.0),
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide:
+                                    const BorderSide(color: Colors.white),
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.0),
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide:
+                                    const BorderSide(color: Colors.white),
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12.0),
-                                borderSide: BorderSide(color: Colors.white),
+                                borderSide:
+                                    const BorderSide(color: Colors.white),
                               ),
-                              counterStyle: TextStyle(color: Colors.white)),
+                              counterStyle:
+                                  const TextStyle(color: Colors.white)),
                           onChanged: (value) {
                             if (!reportTextInfo[teamMember['name']]![
                                 'isChanged']) {

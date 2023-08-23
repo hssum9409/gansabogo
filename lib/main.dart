@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:gansabogo/pages/auth_pages.dart';
 import 'package:gansabogo/pages/member_list_view_page.dart';
+import 'package:gansabogo/pages/gansas_pages/report_write_page.dart';
 
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -276,7 +277,12 @@ class _MyHomePageState extends State<MyHomePage> {
                         : MediaQuery.of(context).size.height * 0.15,
                     child: Image.asset(
                         'asset/images/buttons/write_report_button.png')),
-                onTap: () {})),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ReportWritePage()));
+                })),
         Flexible(
             fit: FlexFit.loose,
             child: InkWell(
